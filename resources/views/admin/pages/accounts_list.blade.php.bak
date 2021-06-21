@@ -1,0 +1,346 @@
+@extends('admin_master')  
+@section('admin_main_content')
+
+    <!-- page content -->
+    <div class="right_col right_col_back" role="main">
+        <div class="">
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                    <div class="box_layout col-md-12 col-sm-12 col-xs-12">			
+
+                        <h3 class="no_padding bottom_padding"><i class="fa fa-money"></i> Accounts </h3>
+                        
+                    </div>
+
+
+                    <?php 
+
+                        $message = Session::get('message');
+
+                        if ( $message !='') { ?>
+
+                            <div class="col-md-12 col-sm-12 col-xs-12" style="padding: 0;">
+
+                                <h5 class="text-center">
+
+                                    <?php
+
+                                        if(isset($message)) { ?>
+
+                                            <div class="alert alert-success alert-dismissible fade in" style="margin: 0;margin-bottom: 12px;box-shadow: 4px 4px 5px rgb(204, 203, 203);">
+                                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                                <strong> <?php echo $message;?> </strong>
+                                            </div>
+                                            
+                                        <?php
+                                            Session::put('message','');
+                                        }
+                                    ?>
+
+                                </h5>
+                            </div> 
+                            
+					<?php 
+                        }
+                        
+                    ?>
+                    
+
+                    <div class="no_padding right_padding res_no_padding col-md-3 col-sm-3 col-xs-12">				
+                        
+                        <div class="panel panel-amin">
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Add Account</h3>
+                                <span class="pull-right clickable"><i class="fa fa-plus"></i></span>
+                            </div>
+
+                            <div class="panel-body">        
+                                
+                                
+                                {!! Form::open(['url' => '/save-account','method'=>'post','enctype'=>'multipart/form-data']) !!}
+                                
+                                    <div class="form-group form-group-sm">
+
+                                        <label for="account-name">Account Name </label>
+										
+                                        <input type="text" placeholder="Account Name" id="account-name" name="account_name" class="form-control" required>
+                                        
+                                    </div>
+
+                                    <div class="form-group form-group-sm">
+
+                                        <label for="branch-name" style="padding-top: 10px;">Branch</label>
+                                        <input type="text" placeholder="Branch" id="branch-name" name="branch_name" class="form-control" required>
+                                        
+                                    </div>                                    
+                                    
+                                    
+                                    <div class="form-group form-group-sm">
+
+                                        <label for="account-no" style="padding-top: 10px;">Account No </label>
+										
+                                        <input id="account-no" placeholder="Account No" type="text" name="account_no" class="form-control" required>
+                                        
+                                    </div>
+									
+									<div class="form-group form-group-sm">
+
+                                        <label for="account-type" style="padding-top: 10px;">Account Type </label>
+										
+                                        <select id="account-type" name="account_type" class="form-control">
+											
+											<option value="1">Cash</option>
+											<option value="2">Bank</option>
+											<option value="3">Mobile Banking (Personal)</option>
+											
+										</select>
+                                        
+                                    </div>
+                                   
+
+                                    <div class="ln_solid"></div>
+
+                                    <div class="form-group form-group-sm">
+									
+                                        <button type="submit" class="btn btn-success">Save</button>
+                                        
+                                    </div>
+
+                                {!! Form::close() !!}                                
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div class="no_padding col-md-9 col-sm-9 col-xs-12">
+
+                        <div class="panel panel-amin">
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Account List</h3>
+                                <span class="pull-right clickable"><i class="fa fa-plus"></i></span>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="table-responsive">                                    
+
+                                    <table class="table table-striped bulk_action table-responsive table-bordered">
+
+
+                                        @if ( $data = count($all_accounts) > 0 ) 
+
+                                            <thead>
+                                                <tr class="headings">
+                                                    <th class="column-title text-center">Name </th>
+                                                    <th class="column-title text-center">Branch </th>
+                                                    <th class="column-title text-center">Acc. No. </th>
+                                                    <th class="column-title text-center">Balance</th>
+                                                    <th class="column-title text-center">Created </th>
+                                                    <th class="column-title text-center">Created Date</th>
+                                                    <th class="column-title text-center">Updated </th>
+                                                    <th class="column-title text-center">Updated Date</th>
+                                                    <th class="column-title text-center"> Action </th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                
+                                                @foreach($all_accounts as $account)
+
+                                                    <tr class="even pointer">
+                                                    
+                                                        <td class="text-center">{{$account->name}}</td>
+                                                        
+                                                        <td class="text-center">{{$account->branch}}</td>
+                                                        
+                                                        <td class="text-center">{{$account->no}}</td>
+														
+                                                        <td class="text-center">
+														
+															<?php 
+																
+																$invested = DB::table('investment_table')->where('account_id', $account->aid)->sum('ammount');
+																
+																$order_payment = DB::table('pament_details')->where('account_id', $account->aid)->where('status',1)->sum('amount');
+																
+																$purchase_payment = DB::table('purchase_payment_details')->where('account_id', $account->aid)->sum('pur_ammount');
+																
+																$loan_refund = DB::table('refund_table')->where('account_id', $account->aid)->sum('refund_ammount');
+																
+																$transfer_out = DB::table('transfer_table')->where('transfer_from', $account->aid)->sum('ammount');
+																
+																$transfer_in = DB::table('transfer_table')->where('transfer_to', $account->aid)->sum('ammount');
+																
+																$expenses = DB::table('expenses')->where('account_id', $account->aid)->sum('expenses_ammount');
+																
+																$loan_in = DB::table('loans_table')->where('account_id', $account->aid)->sum('loan_ammount');
+																
+																$in_acc = $invested + $order_payment + $transfer_in + $loan_in - $purchase_payment - $loan_refund - $transfer_out - $expenses;
+																
+																
+																echo $in_acc;
+																
+															?>
+															
+														
+														</td>
+                                                        
+                                                        <td class="text-center">{{$account->created_admin_name}}</td>
+                                                        
+                                                        <td class="text-center">{{$account->created_date}} / {{$account->created_time}}</td>
+                                                        
+                                                        <td class="text-center">{{$account->updated_admin_name}}</td>
+
+                                                        <td class="text-center"><?php if($account->updated_date != ''){?>{{$account->updated_date}} / {{$account->updated_time}}<?php }?></td>
+                                                        
+                                                        <td class="text-center">
+
+                                                            <button
+                                                                class="btn btn-dark btn-xs edit_account"
+
+                                                                value="{{$account->aid}}"
+                                                                accountName="{{$account->name}}"
+                                                                accountBranch="{{$account->branch}}"
+                                                                accountNo="{{$account->no}}"
+                                                                accountType="{{$account->type}}"
+
+                                                                ><i class="far fa-edit"></i> Edit
+                                                            
+                                                            </button>
+                                                            
+                                                        </td>
+                                                    </tr>
+
+                                                @endforeach
+                                                
+                                                    
+                                            </tbody>
+
+                                        @else 
+
+                                            <h4 class="text-center">Nothing Found</h4>
+
+                                        @endif
+                                                
+                                    </table>
+                                    
+                                </div>
+								
+								<div class=" pull-right">
+
+									@if ( $all_accounts != '') 
+
+										<ul class="pagination">
+											<li class="page-item"><a class="page-link" href="{{URL::to('/accounts-list?page=1')}}">First</a> </li>
+										</ul>
+
+										{{ $all_accounts->links() }} 
+
+										<ul class="pagination">
+											<li class="page-item"><a class="page-link" href="{{URL::to('/accounts-list?page='.$all_accounts->lastPage())}}">Last</a> </li>
+										</ul>
+
+									@endif
+
+								</div>
+								<div class="clearfix"></div>
+								
+                            </div>
+
+								
+
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Edit Accounts Modal -->
+    <div style="z-index:9999999999" class="modal fade edit_account_modal" id="edit" role="dialog">
+        <div class="modal-dialog modal-md">
+
+            <div class="modal-content">
+
+                <div class="modal-header">                    
+                    <h4 class="modal-title">Edit Account <button type="button" class="close" data-dismiss="modal" style="color: #fff;">&times;</button></h4>
+                </div>
+
+                <div class="modal-body">
+                
+                    {!!Form::open(['url'=>'/update-account','method'=>'post','enctype'=>'multipart/form-data'])!!}
+
+                        <div class="form-group form-group-sm">
+						
+                            <label> ID </label>
+							
+                            <input type="text" class="form-control account_id" value="" disabled>
+							
+                            <input type="hidden" name="account_id" value="" class="form-control account_id">
+                            
+                        </div>
+
+                        <div class="form-group form-group-sm">
+
+                            <label for="name">Account Name </label>
+                            <input type="text" id="name" name="account_name" value="" class="form-control account_name" required>
+
+                        </div>
+
+                        <div class="form-group form-group-sm">
+
+                            <label for="bname">Branch</label>
+                            <input type="text" id="bname" name="branch_name" class="form-control branch_name" required> 
+                            
+                        </div>
+                        
+                        <div class="form-group form-group-sm">
+
+                            <label for="no">Account No</label>
+							
+                            <input type="number" name="account_no" id="no" class="form-control account_no" required>
+
+                        </div>
+						
+						<div class="form-group form-group-sm">
+
+							<label for="account-type" style="padding-top: 10px;">Account Type </label>
+							
+							<select id="account-type" name="account_type" class="form-control">
+								
+								<option class="account_type"></option>
+								
+								<option value="1">Cash</option>
+								<option value="2">Bank</option>
+								<option value="3">Mobile Banking (Personal)</option>
+								
+							</select>
+							
+						</div>
+
+                        <div class="ln_solid"></div>
+
+                        <div class="form-group form-group-sm">
+						
+                            <button type="submit" class="btn btn-success">Update</button>
+                        
+                        </div>
+
+                    {!! Form::close()!!}
+                
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>	  
+        </div>
+    </div>
+
+
+@endsection

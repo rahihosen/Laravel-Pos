@@ -1,0 +1,153 @@
+@extends('admin_master')  
+@section('admin_main_content')
+
+    <!-- page content -->
+    <div class="right_col right_col_back" role="main">
+        <div class="">
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                    <div class="box_layout col-md-12 col-sm-12 col-xs-12">			
+
+                        <h3 class="no_padding"><i class="fa fa-money" aria-hidden="true"></i> Income Statement </h3>
+                        
+                    </div>
+
+                    <div class="no_padding col-md-12 col-sm-12 col-xs-12">
+
+                        <div class="panel panel-amin">
+
+                            <div class="panel-body">
+
+
+									<div class="col-md-4 col-sm-4 col-xs-12 no_padding">					
+										<div class="marginBT10 form-group-sm">
+											<input type="text" class="date_from datepicker form-control" value="{{date('Y-m-d')}}">
+										</div>
+										
+									</div>
+									
+									<div class="col-md-4 col-sm-4 col-xs-12 no_padding">					
+										<div class="marginBT10 form-group-sm">
+											<input type="text" class="date_to datepicker form-control" value="{{date('Y-m-d')}}">
+										</div>
+										
+									</div>
+									
+									
+									<div class="col-md-4 col-sm-4 col-xs-12">					
+										<div class="marginBT10 form-group-sm">
+											<button class="search_statement btn btn-primary btn-sm">Go</button>
+											
+											<button class="print_now btn btn-danger btn-sm"><i class="fa fa-print"></i> Print</button>
+										</div>
+										
+									</div>
+								
+									<div class="col-md-8 col-md-offset-2 col-sm-12 col-xs-12 no_padding" id="print_content">
+										<br>
+										<h4 class="text-center"><b>Income Statement</b></h4>
+										<br>
+										<p class="search_term">Showing Lifetime Data</p>
+										<div class="table-responsive">                                    
+
+											<table class="inc_stsmnt_tbl table table-striped bulk_action table-responsive table-bordered">
+													
+												<thead>
+													<tr class="headings">
+														<th class="column-title text-center">Particulars</th>
+														<th class="column-title text-center">Taka</th>
+													</tr>
+												</thead>
+
+												<tbody class="search_res">
+													
+													<tr>
+														<th colspan="2">Revenue</th>
+													</tr>
+													
+													<tr>
+														<td>Total Sales</td>
+														<td>{{$total_order}}</td>
+													</tr>
+													
+													<tr>
+														<th colspan="2">Operation Expense</th>
+													</tr>
+													
+													<tr>
+														<td>Total Purchase</td>
+														<td>{{$total_purchase}}</td>
+													</tr>
+													
+													<tr>
+														<th colspan="2">Administrative Expense</th>
+													</tr>
+													
+													<?php 
+													
+													$exp_sum = 0;
+													
+													foreach($total_expense as $total_expense){
+														
+														$exp_sum += $total_expense->exp_amnt;
+														
+													?>
+													
+													<tr>
+														<td>{{$total_expense->head_name}}</td>
+														<td>{{$total_expense->exp_amnt}}</td>
+													</tr>
+													
+													<?php }?>
+													
+													<tr class="total_border">
+													
+													<?php
+													
+														$income = $total_order - $total_purchase - $exp_sum;
+														
+														$inc_loss = '';
+														
+														if($income >= 0){
+															
+															$inc_loss = 'Income';
+															
+														}else{
+															$inc_loss = 'Loss';
+														}
+														
+													?>
+													
+														<th>Net {{$inc_loss}}</th>
+														<th>{{abs($income)}}</th>
+													</tr>
+													
+												</tbody>
+												
+											</table>
+											
+										</div>
+										
+										<br>
+										<br>
+										<br>
+										<br>
+										<br>
+									
+									</div>
+									
+
+								<div class="clearfix"></div>
+								
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@endsection
